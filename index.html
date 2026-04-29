@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Two Truths &amp; One Lie — Team Quiz Game</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0d0d0f;
+    --bg2: #141418;
+    --bg3: #1c1c22;
+    --bg4: #242430;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #f0eff5;
+    --text2: #a09fb8;
+    --text3: #65647a;
+    --accent: #7c6af5;
+    --accent2: #9d8fff;
+    --accent-bg: rgba(124,106,245,0.12);
+    --accent-border: rgba(124,106,245,0.35);
+    --green: #22c98e;
+    --green-bg: rgba(34,201,142,0.1);
+    --green-border: rgba(34,201,142,0.3);
+    --red: #f05a5a;
+    --red-bg: rgba(240,90,90,0.1);
+    --red-border: rgba(240,90,90,0.3);
+    --amber: #f0b429;
+    --amber-bg: rgba(240,180,41,0.1);
+    --amber-border: rgba(240,180,41,0.3);
+    --movies: #b06ef5;
+    --movies-bg: rgba(176,110,245,0.12);
+    --history: #f0834e;
+    --history-bg: rgba(240,131,78,0.12);
+    --tech: #22c9b0;
+    --tech-bg: rgba(34,201,176,0.12);
+    --places: #f0c84e;
+    --places-bg: rgba(240,200,78,0.12);
+    --r: 10px;
+    --r2: 14px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ─── LAYOUT ─── */
+  .wrap { max-width: 680px; margin: 0 auto; padding: 0 20px 60px; }
+
+  /* ─── HERO ─── */
+  .hero {
+    padding: 52px 0 36px;
+    text-align: center;
+    position: relative;
+  }
+  .hero-tag {
+    display: inline-block;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    background: var(--accent-bg);
+    border: 1px solid var(--accent-border);
+    padding: 4px 14px;
+    border-radius: 99px;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(30px, 6vw, 46px);
+    font-weight: 800;
+    letter-spacing: -.02em;
+    line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+  .hero h1 span { color: var(--accent2); }
+  .hero p { font-size: 15px; color: var(--text2); }
+
+  /* ─── CARD ─── */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--r2);
+    padding: 22px 24px;
+    margin-bottom: 14px;
+  }
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 16px;
+  }
+
+  /* ─── FORM ELEMENTS ─── */
+  .field-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+  .field-row label { font-size: 13px; color: var(--text2); min-width: 110px; }
+  select, input[type="text"] {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: var(--r);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 9px 14px;
+    outline: none;
+    transition: border-color .15s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+  select { padding-right: 34px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2365647a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; cursor: pointer; }
+  select:focus, input[type="text"]:focus { border-color: var(--accent); }
+  select option { background: var(--bg3); }
+
+  .team-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .team-row .num { width: 28px; height: 28px; border-radius: 50%; background: var(--bg4); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: var(--text3); flex-shrink: 0; }
+  .team-row input { flex: 1; }
+
+  /* ─── BUTTONS ─── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 22px;
+    border-radius: var(--r);
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    cursor: pointer;
+    border: 1px solid var(--border2);
+    background: var(--bg3);
+    color: var(--text);
+    transition: all .15s;
+    text-decoration: none;
+  }
+  .btn:hover { background: var(--bg4); border-color: var(--border2); }
+  .btn:active { transform: scale(.98); }
+  .btn-accent {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .btn-accent:hover { background: var(--accent2); border-color: var(--accent2); }
+  .btn-lg { padding: 13px 28px; font-size: 14px; width: 100%; justify-content: center; }
+
+  /* ─── CATEGORY PILLS ─── */
+  .cat-pill {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 99px;
+    border: 1px solid;
+    letter-spacing: .03em;
+  }
+  .cat-movies { color: var(--movies); background: var(--movies-bg); border-color: rgba(176,110,245,.25); }
+  .cat-history { color: var(--history); background: var(--history-bg); border-color: rgba(240,131,78,.25); }
+  .cat-tech { color: var(--tech); background: var(--tech-bg); border-color: rgba(34,201,176,.25); }
+  .cat-places { color: var(--places); background: var(--places-bg); border-color: rgba(240,200,78,.25); }
+
+  /* ─── PROGRESS ─── */
+  .prog-wrap { height: 3px; background: var(--bg3); border-radius: 99px; margin-bottom: 20px; overflow: hidden; }
+  .prog-bar { height: 100%; background: var(--accent); border-radius: 99px; transition: width .4s ease; }
+
+  /* ─── STATUS BAR ─── */
+  .status-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .status-bar .q-count { font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; color: var(--text3); }
+  .status-bar .turn-tag { font-size: 13px; color: var(--text2); }
+  .status-bar .turn-tag strong { color: var(--accent2); font-weight: 500; }
+
+  /* ─── SCORE GRID ─── */
+  .score-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .score-cell {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 12px 14px;
+    text-align: center;
+    transition: border-color .2s;
+  }
+  .score-cell.active { border-color: var(--accent-border); background: var(--accent-bg); }
+  .score-cell .s-name { font-size: 11px; color: var(--text3); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .score-cell .s-pts { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--text); }
+
+  /* ─── QUESTION ─── */
+  .q-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--r2);
+    padding: 24px;
+    margin-bottom: 14px;
+  }
+  .q-label { font-size: 11px; color: var(--text3); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 10px; font-family: 'Syne', sans-serif; font-weight: 600; }
+  .q-text { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 600; color: var(--text); line-height: 1.45; margin-bottom: 22px; }
+
+  /* ─── OPTION BUTTONS ─── */
+  .opt {
+    width: 100%;
+    text-align: left;
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    border-radius: var(--r);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.55;
+    cursor: pointer;
+    border: 1px solid var(--border2);
+    background: var(--bg3);
+    color: var(--text);
+    transition: all .15s;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .opt:hover:not(:disabled) { border-color: var(--accent-border); background: var(--accent-bg); }
+  .opt:disabled { cursor: default; }
+  .opt .opt-lbl { font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700; color: var(--text3); min-width: 18px; margin-top: 1px; }
+  .opt.correct { border-color: var(--green-border); background: var(--green-bg); color: var(--green); }
+  .opt.correct .opt-lbl { color: var(--green); }
+  .opt.wrong { border-color: var(--red-border); background: var(--red-bg); color: var(--red); }
+  .opt.wrong .opt-lbl { color: var(--red); }
+  .opt.is-lie { border-color: var(--amber-border); background: var(--amber-bg); color: var(--amber); }
+  .opt.is-lie .opt-lbl { color: var(--amber); }
+  .lie-tag { font-size: 11px; font-weight: 600; background: var(--amber); color: #000; padding: 2px 8px; border-radius: 99px; margin-left: auto; white-space: nowrap; align-self: center; flex-shrink: 0; font-family: 'Syne', sans-serif; letter-spacing: .04em; }
+
+  /* ─── EXPLANATION ─── */
+  .explain-box {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 var(--r) var(--r) 0;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.65;
+    margin-top: 4px;
+    margin-bottom: 14px;
+    display: none;
+  }
+  .explain-box.show { display: block; }
+
+  /* ─── FEEDBACK BANNER ─── */
+  .feedback {
+    border-radius: var(--r);
+    padding: 12px 18px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    display: none;
+  }
+  .feedback.show { display: block; }
+  .feedback.win { background: var(--green-bg); border: 1px solid var(--green-border); color: var(--green); }
+  .feedback.lose { background: var(--red-bg); border: 1px solid var(--red-border); color: var(--red); }
+
+  /* ─── FINAL ─── */
+  .final-hero { text-align: center; padding: 10px 0 24px; }
+  .trophy { font-size: 52px; margin-bottom: 8px; }
+  .final-hero h2 { font-family: 'Syne', sans-serif; font-size: 28px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+  .final-hero p { font-size: 14px; color: var(--text2); }
+  .leaderboard { margin-top: 4px; }
+  .lb-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    gap: 10px;
+  }
+  .lb-row:last-child { border-bottom: none; }
+  .lb-row .rank { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; color: var(--text3); min-width: 36px; }
+  .lb-row .name { flex: 1; color: var(--text); }
+  .lb-row .pts { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 16px; color: var(--accent2); }
+  .lb-row.top { background: var(--accent-bg); border-color: var(--accent-border); border-radius: var(--r); margin-bottom: 4px; }
+  .lb-row.top .rank { color: var(--accent2); }
+  .lb-row.top .name { font-weight: 500; }
+
+  /* ─── SCREEN SHOW/HIDE ─── */
+  .screen { display: none; }
+  .screen.on { display: block; animation: fadeIn .25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ─── DIVIDER ─── */
+  hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+  /* ─── FOOTER ─── */
+  .footer { text-align: center; font-size: 12px; color: var(--text3); margin-top: 40px; }
+
+  @media (max-width: 480px) {
+    .hero { padding: 36px 0 24px; }
+    .card, .q-card { padding: 18px; }
+    .score-cell .s-pts { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">Team Quiz Game · 50 Questions</div>
+    <h1>Two Truths &amp;<br><span>One Lie</span></h1>
+    <p>Can your team spot the lie hidden among the truths?</p>
+  </div>
+
+  <!-- SETUP SCREEN -->
+  <div id="s-setup" class="screen on">
+    <div class="card">
+      <div class="card-title">Game settings</div>
+      <div class="field-row">
+        <label>Number of teams</label>
+        <select id="numTeams" onchange="buildTeamInputs()">
+          <option value="2">2 teams</option>
+          <option value="3">3 teams</option>
+          <option value="4">4 teams</option>
+          <option value="5">5 teams</option>
+          <option value="6">6 teams</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <label>Questions</label>
+        <select id="numQ">
+          <option value="10">10 questions</option>
+          <option value="20" selected>20 questions</option>
+          <option value="30">30 questions</option>
+          <option value="50">All 50 questions</option>
+        </select>
+      </div>
+      <div class="field-row">
+        <label>Category</label>
+        <select id="catFilter">
+          <option value="all">All categories</option>
+          <option value="Movies">Movies</option>
+          <option value="History">History</option>
+          <option value="Tech">Computers &amp; Technology</option>
+          <option value="Places">Places</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Team names</div>
+      <div id="teamInputs"></div>
+    </div>
+
+    <button class="btn btn-accent btn-lg" onclick="startGame()">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 3.5l6 4.5-6 4.5V3.5z" fill="currentColor"/></svg>
+      Start game
+    </button>
+  </div>
+
+  <!-- GAME SCREEN -->
+  <div id="s-game" class="screen">
+    <div class="status-bar">
+      <span class="q-count" id="qcounter">Q 1 of 20</span>
+      <span id="catbadge" class="cat-pill"></span>
+      <span class="turn-tag">Turn: <strong id="turnLabel"></strong></span>
+    </div>
+    <div class="prog-wrap"><div class="prog-bar" id="progBar" style="width:0%"></div></div>
+    <div class="score-grid" id="scoreGrid"></div>
+
+    <div class="q-card">
+      <div class="q-label" id="qLabel">Question 1</div>
+      <div class="q-text" id="qText"></div>
+      <div id="optionsWrap"></div>
+      <div class="explain-box" id="explainBox"></div>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+    <div id="gameActions"></div>
+  </div>
+
+  <!-- FINAL SCREEN -->
+  <div id="s-final" class="screen">
+    <div class="card">
+      <div class="final-hero">
+        <div class="trophy" id="trophyIcon">🏆</div>
+        <h2 id="winnerName"></h2>
+        <p id="winnerSub"></p>
+      </div>
+      <hr />
+      <div class="leaderboard" id="leaderboard"></div>
+      <hr />
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">
+        <button class="btn btn-accent" onclick="resetToSetup()">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7a5 5 0 1 0 1-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M2 2v3h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Play again
+        </button>
+        <button class="btn" onclick="window.print()">Print results</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">Two Truths &amp; One Lie &mdash; Team Edition</div>
+</div>
+
+<script>
+const ALL_Q = [
+  {cat:"Movies",q:"Three statements about the movie Titanic (1997):",s:["The film won 11 Academy Awards, including Best Picture","Leonardo DiCaprio was nominated for Best Actor at the Oscars for Titanic","Kate Winslet was nominated for Best Actress at the Oscars for Titanic"],lie:1,exp:"Titanic won 11 Oscars but Leonardo DiCaprio was NOT nominated for Best Actor for this film. Kate Winslet was indeed nominated for Best Actress."},
+  {cat:"Movies",q:"Three statements about The Godfather (1972):",s:["Marlon Brando won Best Actor for his role as Vito Corleone","Al Pacino won Best Supporting Actor at the Oscars for The Godfather","The film was directed by Francis Ford Coppola"],lie:1,exp:"Al Pacino was nominated but did NOT win. Marlon Brando won Best Actor and declined the award, and Coppola did direct the film."},
+  {cat:"Movies",q:"Three statements about the Harry Potter film series:",s:["There are 8 Harry Potter films in the main series","Daniel Radcliffe played Harry Potter in all 8 films","Harry Potter and the Deathly Hallows was split into 3 parts"],lie:2,exp:"Deathly Hallows was split into only 2 parts, not 3. There are 8 films, and Radcliffe appeared in all of them."},
+  {cat:"Movies",q:"Three statements about James Cameron's Avatar (2009):",s:["Avatar held the record for highest-grossing film of all time for over a decade","Avatar was filmed entirely using real-world locations with no CGI environments","The fictional planet in Avatar is called Pandora"],lie:1,exp:"Avatar's environments were almost entirely CGI. It did hold the box office record, and the planet is indeed called Pandora."},
+  {cat:"Movies",q:"Three statements about The Lion King (1994):",s:["The Lion King was the first Disney animated film to be based on an original story","Jeremy Irons voiced the villain Scar","Elton John wrote songs for the film's soundtrack"],lie:0,exp:"The Lion King's story was inspired by Shakespeare's Hamlet — not original. Jeremy Irons did voice Scar, and Elton John contributed songs."},
+  {cat:"Movies",q:"Three statements about the Marvel Cinematic Universe:",s:["Iron Man (2008) was the first film in the MCU","The Avengers (2012) was directed by Joss Whedon","Robert Downey Jr. first played Tony Stark in the 2010 film Iron Man 2"],lie:2,exp:"Robert Downey Jr. first played Tony Stark in the 2008 film Iron Man. Iron Man was the MCU's first film and Whedon did direct The Avengers."},
+  {cat:"Movies",q:"Three statements about Jurassic Park (1993):",s:["The film was directed by Steven Spielberg","Jurassic Park was based on a novel by Michael Crichton","Jeff Goldblum plays the park's creator John Hammond"],lie:2,exp:"Richard Attenborough played John Hammond. Jeff Goldblum played mathematician Ian Malcolm. Spielberg directed it and it was based on Crichton's novel."},
+  {cat:"Movies",q:"Three statements about Star Wars: A New Hope (1977):",s:["Harrison Ford played Han Solo","The film was originally released simply as Star Wars, without A New Hope in the title","Yoda appeared in A New Hope as a mentor to Luke Skywalker"],lie:2,exp:"Yoda did not appear in A New Hope — he first appeared in The Empire Strikes Back. Harrison Ford did play Han Solo and the film was originally just titled Star Wars."},
+  {cat:"Movies",q:"Three statements about Forrest Gump (1994):",s:["Tom Hanks won the Academy Award for Best Actor for Forrest Gump","The film was directed by Robert Zemeckis","The famous line in the film is 'Life is like a box of chocolates'"],lie:2,exp:"The actual line in the film is 'Life WAS like a box of chocolates.' Tom Hanks did win Best Actor and Zemeckis directed the film."},
+  {cat:"Movies",q:"Three statements about Christopher Nolan's The Dark Knight (2008):",s:["Heath Ledger won a posthumous Academy Award for his role as the Joker","Christian Bale played Bruce Wayne / Batman","The film is set in a fictional city called Metropolis"],lie:2,exp:"The Dark Knight is set in Gotham City. Metropolis is Superman's city. Heath Ledger did win posthumously and Christian Bale played Batman."},
+  {cat:"Movies",q:"Three statements about Pixar's Toy Story (1995):",s:["Toy Story was the first feature-length CGI animated film","Tom Hanks voiced Woody","Tim Allen voiced the character Buzz Lightyear"],lie:3,exp:"All three are true! Toy Story was indeed the first feature CGI film, Tom Hanks voiced Woody, and Tim Allen voiced Buzz."},
+  {cat:"Movies",q:"Three statements about Inception (2010):",s:["Inception was directed by Christopher Nolan","Leonardo DiCaprio starred as Dom Cobb","The film won the Academy Award for Best Picture"],lie:2,exp:"Inception did NOT win Best Picture — that year The King's Speech won. Inception won four Oscars but not Best Picture. Nolan directed it and DiCaprio starred in it."},
+  {cat:"History",q:"Three statements about World War II:",s:["World War II ended in 1945","The atomic bombs were dropped on Hiroshima and Nagasaki in Japan","The D-Day landings took place on the beaches of Normandy, Germany"],lie:2,exp:"Normandy is in France, not Germany. The D-Day landings on June 6, 1944 were on French beaches. The other two statements are correct."},
+  {cat:"History",q:"Three statements about ancient Egypt:",s:["The Great Pyramid of Giza was built as a tomb for Pharaoh Khufu","Cleopatra was the last active ruler of ancient Egypt","Hieroglyphics were deciphered using the Rosetta Stone, found in Greece"],lie:2,exp:"The Rosetta Stone was found in Rosetta (Rashid), Egypt — not Greece. It was discovered in 1799. The other two statements are accurate."},
+  {cat:"History",q:"Three statements about the American moon landing:",s:["Neil Armstrong was the first human to walk on the moon in 1969","Buzz Aldrin was the second person to walk on the moon during Apollo 11","Michael Collins walked on the moon's surface during the Apollo 11 mission"],lie:2,exp:"Michael Collins did not walk on the moon — he orbited in the Command Module while Armstrong and Aldrin descended to the surface."},
+  {cat:"History",q:"Three statements about the French Revolution:",s:["The French Revolution began in 1789","Marie Antoinette was the wife of King Louis XVI","Napoleon Bonaparte was executed by guillotine during the Reign of Terror"],lie:2,exp:"Napoleon was not executed — he rose to become Emperor of France. Louis XVI and Marie Antoinette were the ones executed. The revolution did begin in 1789."},
+  {cat:"History",q:"Three statements about Christopher Columbus:",s:["Columbus completed four voyages across the Atlantic Ocean","Columbus first landed in the Caribbean in 1492","Columbus was born in Portugal"],lie:2,exp:"Christopher Columbus was born in Genoa, Italy (the Republic of Genoa), not Portugal. He did complete four voyages and first reached the Caribbean in 1492."},
+  {cat:"History",q:"Three statements about the Roman Empire:",s:["Julius Caesar was the first official Emperor of Rome","The Roman Colosseum was completed around 80 AD","Latin was the primary language of the Roman Empire"],lie:0,exp:"Julius Caesar was never officially Emperor — he was Dictator perpetuo. The first true Emperor was Augustus. The Colosseum was completed around 80 AD and Latin was the Roman language."},
+  {cat:"History",q:"Three statements about World War I:",s:["World War I began in 1914 following the assassination of Archduke Franz Ferdinand","The war ended with the Treaty of Versailles in 1919","The United States entered the war in 1917 after the attack on Pearl Harbor"],lie:2,exp:"Pearl Harbor (December 1941) triggered US entry into World War II, not WWI. The US entered WWI in 1917 due to German submarine warfare and the Zimmermann Telegram."},
+  {cat:"History",q:"Three statements about Mahatma Gandhi:",s:["Gandhi was born in India in 1869","Gandhi was a key leader of India's independence movement against British rule","Gandhi was awarded the Nobel Peace Prize in 1948"],lie:2,exp:"Gandhi was never awarded the Nobel Peace Prize, though he was nominated multiple times. He was born in 1869 and was absolutely central to India's independence movement."},
+  {cat:"History",q:"Three statements about ancient Rome's gladiators:",s:["Most gladiators were slaves, prisoners of war, or convicted criminals","Gladiatorial combat always ended in the death of the loser","The Colosseum in Rome hosted gladiatorial games"],lie:1,exp:"Not all fights ended in death — losers could be spared based on the crowd or emperor's decision. Most gladiators were indeed slaves or criminals and the Colosseum hosted these games."},
+  {cat:"History",q:"Three statements about the Cold War:",s:["The Berlin Wall was built in 1961 and fell in 1989","The Cuban Missile Crisis occurred in 1962","The Cold War was a direct military conflict between the US and Soviet Union"],lie:2,exp:"The Cold War was characterized by political tension and proxy wars — never a direct military conflict between the two superpowers. The Berlin Wall and Cuban Missile Crisis dates are correct."},
+  {cat:"History",q:"Three statements about the ancient Olympics:",s:["The ancient Olympic Games were held in Olympia, Greece","Women were allowed to compete in the ancient Olympic Games","The ancient Olympics were held every four years"],lie:1,exp:"Women were banned from competing in — and even from watching — the ancient Olympic Games. The games were held in Olympia, Greece every four years."},
+  {cat:"History",q:"Three statements about the Black Death:",s:["The Black Death killed an estimated one-third of Europe's population in the 14th century","The plague was caused by the bacterium Yersinia pestis","The Black Death originated in South America"],lie:2,exp:"The Black Death originated in Central Asia and spread along trade routes to Europe and the Middle East. It did kill roughly a third of Europe's population and Yersinia pestis is the correct cause."},
+  {cat:"History",q:"Three statements about the US Declaration of Independence:",s:["The Declaration of Independence was adopted on July 4, 1776","Benjamin Franklin was one of the signatories","Thomas Jefferson was the primary author of the Declaration"],lie:3,exp:"All three are true! The Declaration was adopted July 4th 1776, Franklin was a signatory, and Jefferson was the primary drafter. This is a trick round!"},
+  {cat:"Tech",q:"Three statements about the World Wide Web:",s:["Tim Berners-Lee invented the World Wide Web in 1989","The first website was hosted at CERN in Switzerland","The World Wide Web and the Internet are the same thing"],lie:2,exp:"The World Wide Web is a service that runs on top of the Internet — they are not the same. The Internet is the physical network; the Web is an application using it. Berners-Lee created it at CERN."},
+  {cat:"Tech",q:"Three statements about Apple Inc.:",s:["Apple was co-founded by Steve Jobs, Steve Wozniak, and Ronald Wayne","The first iPhone was unveiled by Steve Jobs in 2007","Apple was founded in a garage in Cupertino, California"],lie:2,exp:"Apple was founded in Los Altos, California — in the garage of Steve Jobs' childhood home, not in Cupertino. The other two facts are correct."},
+  {cat:"Tech",q:"Three statements about programming languages:",s:["Python was created by Guido van Rossum","Java was originally called Oak","The C programming language was developed at Microsoft"],lie:2,exp:"C was developed at Bell Labs by Dennis Ritchie in the early 1970s — not at Microsoft. Python's creator and Java's original name are both correct."},
+  {cat:"Tech",q:"Three statements about the history of computers:",s:["The ENIAC, completed in 1945, was one of the first general-purpose electronic computers","Bill Gates and Paul Allen founded Microsoft in 1975","The first computer mouse was invented by Steve Jobs in 1968"],lie:2,exp:"The computer mouse was invented by Douglas Engelbart, not Steve Jobs. It was famously demonstrated in 1968. The ENIAC and Microsoft's founding date are both correct."},
+  {cat:"Tech",q:"Three statements about the Internet:",s:["The Internet evolved from a US military project called ARPANET","The first email was sent in 1971 by Ray Tomlinson","Google was founded in a Stanford University dorm room"],lie:2,exp:"Google was founded in a garage in Menlo Park, California by Larry Page and Sergey Brin — not a dorm room. The ARPANET origin and first email facts are correct."},
+  {cat:"Tech",q:"Three statements about artificial intelligence:",s:["The term 'artificial intelligence' was coined by John McCarthy in 1956","Alan Turing proposed the Turing Test as a measure of machine intelligence","IBM's Deep Blue defeated chess champion Garry Kasparov in 1993"],lie:2,exp:"Deep Blue defeated Kasparov in 1997, not 1993. McCarthy did coin the term AI in 1956 and Turing proposed his famous test in his 1950 paper."},
+  {cat:"Tech",q:"Three statements about social media platforms:",s:["Facebook was founded by Mark Zuckerberg while at Harvard University","Twitter was founded in 2006","Instagram was founded by Bill Gates and Steve Jobs"],lie:2,exp:"Instagram was founded in 2010 by Kevin Systrom and Mike Krieger. Facebook's origin at Harvard and Twitter's 2006 founding are both accurate."},
+  {cat:"Tech",q:"Three statements about Microsoft:",s:["Microsoft's Windows 1.0 was released in 1985","Bill Gates remained CEO of Microsoft until 2014","Microsoft acquired LinkedIn in 2016 for approximately $26 billion"],lie:1,exp:"Bill Gates stepped down as CEO in 2000 when Steve Ballmer took over. He left the board in 2020. Windows 1.0 did launch in 1985 and the LinkedIn acquisition is correct."},
+  {cat:"Tech",q:"Three statements about video game history:",s:["Pong was one of the first commercially successful arcade video games","Nintendo was originally a playing card company before making video games","The original PlayStation was first released in the United States in 1994"],lie:2,exp:"The original PlayStation was first released in Japan in December 1994 and in North America in September 1995 — not the US in 1994. Pong's history and Nintendo's playing card origins are correct."},
+  {cat:"Tech",q:"Three statements about cybersecurity:",s:["The first computer virus was created in 1971 and was called the Creeper","A phishing attack involves tricking users into revealing sensitive information","Encryption was invented by Google in the 1990s to protect search data"],lie:2,exp:"Encryption has existed for centuries — from ancient ciphers to modern algorithms. It was absolutely not invented by Google. The Creeper virus and the phishing definition are both correct."},
+  {cat:"Tech",q:"Three statements about Moore's Law:",s:["Moore's Law was proposed by Gordon Moore in 1965","Moore's Law states that transistor count doubles approximately every two years","Gordon Moore was a co-founder of Intel"],lie:3,exp:"All three are correct! Gordon Moore published his observation in 1965 (revised to ~2 years), and he co-founded Intel in 1968. This is a trick round!"},
+  {cat:"Tech",q:"Three statements about data storage:",s:["A terabyte is larger than a gigabyte","The first commercially available hard drive (IBM 350) had a capacity of 5 megabytes","USB flash drives were first introduced in the 1970s"],lie:2,exp:"USB flash drives were first commercialized around 2000. The IBM 350 disk (1956) did have a 5MB capacity and a terabyte is certainly larger than a gigabyte."},
+  {cat:"Tech",q:"Three statements about the development of the web browser:",s:["The first widely used web browser was called Mosaic","Internet Explorer was developed by Apple","Google Chrome was first released in 2008"],lie:1,exp:"Internet Explorer was developed by Microsoft, not Apple. Mosaic (1993) was indeed one of the first widely used browsers and Chrome did launch in 2008."},
+  {cat:"Places",q:"Three statements about the Eiffel Tower:",s:["The Eiffel Tower is located in Paris, France","The Eiffel Tower was originally built as a permanent structure","The Eiffel Tower was completed in 1889"],lie:1,exp:"The Eiffel Tower was originally intended to be a temporary structure for the 1889 World's Fair and was nearly demolished in 1909. It was saved because it functioned as a radio tower."},
+  {cat:"Places",q:"Three statements about the Amazon River:",s:["The Amazon River flows through South America","The Amazon River is the longest river in the world","The Amazon rainforest produces a significant share of the world's oxygen"],lie:1,exp:"The Nile River in Africa is generally considered the world's longest river. The Amazon does flow through South America and the rainforest does produce enormous amounts of oxygen."},
+  {cat:"Places",q:"Three statements about Mount Everest:",s:["Mount Everest is the tallest mountain in the world measured from sea level","Sir Edmund Hillary and Tenzing Norgay were the first to summit Everest in 1953","Mount Everest is located in the Alps mountain range"],lie:2,exp:"Mount Everest is in the Himalayas on the Nepal-Tibet border — not in the Alps, which are in Europe. Hillary and Norgay summited in 1953 and it is the tallest peak by sea level measurement."},
+  {cat:"Places",q:"Three statements about Australia:",s:["Australia is both a country and a continent","The capital of Australia is Sydney","The Great Barrier Reef is located off the coast of Australia"],lie:1,exp:"The capital of Australia is Canberra, not Sydney. Sydney is the largest city but the capital was purpose-built as a compromise between Sydney and Melbourne. The other two facts are correct."},
+  {cat:"Places",q:"Three statements about the Sahara Desert:",s:["The Sahara is the largest hot desert in the world","The Sahara Desert is located in Africa","Sand dunes cover more than 75% of the Sahara Desert"],lie:2,exp:"Sand dunes actually cover only about 25% of the Sahara — the rest is rocky terrain and gravel plains known as reg. The Sahara is the world's largest hot desert and is in North Africa."},
+  {cat:"Places",q:"Three statements about the Great Wall of China:",s:["The Great Wall of China stretches over 13,000 miles in total length","The Great Wall is visible from space with the naked eye","The Great Wall was built over many centuries by different Chinese dynasties"],lie:1,exp:"The Great Wall is NOT reliably visible from space with the naked eye — this popular myth was debunked by astronauts including Chinese astronaut Yang Liwei. The length and multi-dynasty construction are correct."},
+  {cat:"Places",q:"Three statements about the Nile River:",s:["The Nile flows northward through Africa into the Mediterranean Sea","Egypt and Sudan are the only countries the Nile flows through","The Nile is widely considered the longest river in the world"],lie:1,exp:"The Nile flows through 11 countries including Uganda, Ethiopia, Kenya, Tanzania, Rwanda, Burundi, DR Congo, South Sudan, Eritrea, Sudan, and Egypt — not just Egypt and Sudan."},
+  {cat:"Places",q:"Three statements about Antarctica:",s:["Antarctica is the coldest and windiest continent on Earth","Antarctica has no permanent human population","Antarctica is the smallest continent on Earth"],lie:2,exp:"Antarctica is not the smallest continent — Australia is. Antarctica is actually the fifth-largest continent. It is the coldest and windiest, and has no permanent human residents."},
+  {cat:"Places",q:"Three statements about the United States:",s:["The United States has 50 states","Washington D.C. is a state in the United States","Alaska is the largest US state by area"],lie:1,exp:"Washington D.C. is a federal district, not a state. It stands for District of Columbia and has unique status with no full statehood. The US has 50 states and Alaska is the largest by area."},
+  {cat:"Places",q:"Three statements about Venice, Italy:",s:["Venice is built on a series of islands connected by canals and bridges","Gondolas and water buses are the main transport within the historic city","Venice has more cars per capita than any other city in Italy"],lie:2,exp:"Venice has no cars at all within the historic city — there are no roads, only canals and pedestrian paths, making it one of the world's few truly car-free cities."},
+  {cat:"Places",q:"Three statements about Japan:",s:["Tokyo is the capital of Japan","Japan consists of four main islands","Japanese is the only official language of Japan"],lie:3,exp:"All three are essentially true. Tokyo is the capital, the four main islands are Honshu, Hokkaido, Kyushu and Shikoku, and Japanese is the only official language. Trick round!"},
+  {cat:"Places",q:"Three statements about Brazil:",s:["Brazil is the largest country in South America","Spanish is the official language of Brazil","Brasília is the capital city of Brazil"],lie:1,exp:"Brazil's official language is Portuguese, not Spanish — making it unique among South American nations. Brazil is the largest South American country and Brasília is indeed the capital."},
+];
+
+let teams=[], scores=[], queue=[], qIdx=0, answered=false, curTeam=0;
+
+function catClass(c){
+  if(c==='Movies') return 'cat-movies';
+  if(c==='History') return 'cat-history';
+  if(c==='Tech') return 'cat-tech';
+  return 'cat-places';
+}
+
+function buildTeamInputs(){
+  const n=parseInt(document.getElementById('numTeams').value);
+  const defaults=['Alpha','Bravo','Charlie','Delta','Echo','Foxtrot'];
+  let h='';
+  for(let i=0;i<n;i++){
+    h+=`<div class="team-row"><div class="num">${i+1}</div><input type="text" id="tname${i}" value="${defaults[i]}" placeholder="Team ${i+1} name" /></div>`;
+  }
+  document.getElementById('teamInputs').innerHTML=h;
+}
+buildTeamInputs();
+
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById(id).classList.add('on');
+}
+
+function startGame(){
+  const n=parseInt(document.getElementById('numTeams').value);
+  const numQ=parseInt(document.getElementById('numQ').value);
+  const cat=document.getElementById('catFilter').value;
+  teams=[];scores=[];
+  for(let i=0;i<n;i++){
+    const nm=(document.getElementById('tname'+i).value||'').trim()||('Team '+(i+1));
+    teams.push(nm);scores.push(0);
+  }
+  let pool=cat==='all'?[...ALL_Q]:ALL_Q.filter(x=>x.cat===cat);
+  pool=shuffle(pool).slice(0,Math.min(numQ,pool.length));
+  queue=pool;qIdx=0;curTeam=0;answered=false;
+  showScreen('s-game');
+  renderQuestion();
+}
+
+function renderScoreGrid(){
+  document.getElementById('scoreGrid').innerHTML=teams.map((t,i)=>`
+    <div class="score-cell${i===curTeam?' active':''}">
+      <div class="s-name">${t}</div>
+      <div class="s-pts">${scores[i]}</div>
+    </div>`).join('');
+}
+
+function renderQuestion(){
+  if(qIdx>=queue.length){showFinal();return;}
+  answered=false;
+  const q=queue[qIdx];
+  const pct=Math.round((qIdx/queue.length)*100);
+  document.getElementById('progBar').style.width=pct+'%';
+  document.getElementById('qcounter').textContent=`Q ${qIdx+1} of ${queue.length}`;
+  const cb=document.getElementById('catbadge');
+  cb.textContent=q.cat==='Tech'?'Tech':q.cat;
+  cb.className='cat-pill '+catClass(q.cat);
+  document.getElementById('turnLabel').textContent=teams[curTeam];
+  document.getElementById('qLabel').textContent=`Question ${qIdx+1}`;
+  document.getElementById('qText').textContent=q.q;
+  const labels=['A','B','C'];
+  document.getElementById('optionsWrap').innerHTML=q.s.map((s,i)=>
+    `<button class="opt" id="opt${i}" onclick="pick(${i})"><span class="opt-lbl">${labels[i]}</span>${s}</button>`
+  ).join('');
+  document.getElementById('explainBox').classList.remove('show');
+  document.getElementById('explainBox').textContent='';
+  const fb=document.getElementById('feedback');
+  fb.classList.remove('show','win','lose');
+  document.getElementById('gameActions').innerHTML='';
+  renderScoreGrid();
+}
+
+function pick(idx){
+  if(answered)return;
+  answered=true;
+  const q=queue[qIdx];
+  const correct=idx===q.lie;
+  for(let i=0;i<3;i++){
+    const b=document.getElementById('opt'+i);
+    b.disabled=true;
+    if(i===q.lie){
+      b.classList.add('is-lie');
+      b.insertAdjacentHTML('beforeend','<span class="lie-tag">THE LIE</span>');
+    } else if(i===idx){
+      b.classList.add('wrong');
+    } else {
+      b.classList.add('correct');
+    }
+  }
+  if(correct) scores[curTeam]++;
+  const fb=document.getElementById('feedback');
+  fb.textContent=correct?`Correct! ${teams[curTeam]} spotted the lie. +1 point!`:`Wrong! That was actually true. No point this round.`;
+  fb.classList.add('show', correct?'win':'lose');
+  const eb=document.getElementById('explainBox');
+  eb.textContent=q.exp;
+  eb.classList.add('show');
+  renderScoreGrid();
+  document.getElementById('gameActions').innerHTML=`<button class="btn btn-accent" onclick="nextQ()">${qIdx+1<queue.length?'Next question →':'See results →'}</button>`;
+}
+
+function nextQ(){
+  qIdx++;
+  curTeam=(curTeam+1)%teams.length;
+  renderQuestion();
+}
+
+function showFinal(){
+  showScreen('s-final');
+  document.getElementById('progBar').style.width='100%';
+  const ranked=[...teams.map((t,i)=>({t,s:scores[i]}))].sort((a,b)=>b.s-a.s);
+  const top=ranked[0];
+  const tied=ranked.filter(x=>x.s===top.s);
+  document.getElementById('trophyIcon').textContent=tied.length>1?'🤝':'🏆';
+  document.getElementById('winnerName').textContent=tied.length>1?'It\'s a tie!':top.t+' wins!';
+  document.getElementById('winnerSub').textContent=tied.length>1
+    ?tied.map(x=>x.t).join(' & ')+' tied with '+top.s+' point'+(top.s!==1?'s':'')+'!'
+    :'Final score: '+top.s+' point'+(top.s!==1?'s':'')+' — well played!';
+  const ordinals=['1st','2nd','3rd','4th','5th','6th'];
+  document.getElementById('leaderboard').innerHTML=ranked.map((x,i)=>
+    `<div class="lb-row${i===0?' top':''}"><span class="rank">${ordinals[i]||i+1}</span><span class="name">${x.t}</span><span class="pts">${x.s} pt${x.s!==1?'s':''}</span></div>`
+  ).join('');
+}
+
+function resetToSetup(){
+  showScreen('s-setup');
+  buildTeamInputs();
+}
+</script>
+</body>
+</html>
